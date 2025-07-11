@@ -10,7 +10,7 @@ import (
 )
 
 type Dot1xService struct {
-	pb.UnimplementedDot1xManagerServer
+	pb.UnimplementedDot1XManagerServer
 	manager *core.InterfaceManager
 }
 
@@ -22,7 +22,12 @@ func NewDot1xService() *Dot1xService {
 	return &Dot1xService{manager: manager}
 }
 
-func (s *Dot1xService) ConfigureInterface(ctx context.Context, req *pb.Dot1xConfigRequest) (*pb.Dot1xConfigResponse, error) {
+// NewDot1xServiceWithManager creates a service using the provided manager.
+func NewDot1xServiceWithManager(m *core.InterfaceManager) *Dot1xService {
+	return &Dot1xService{manager: m}
+}
+
+func (s *Dot1xService) ConfigureInterface(ctx context.Context, req *pb.Dot1XConfigRequest) (*pb.Dot1XConfigResponse, error) {
 	select {
 	case <-ctx.Done():
 		log.Println("[WARN] ConfigureInterface canceled")
@@ -58,7 +63,7 @@ func (s *Dot1xService) GetStatus(ctx context.Context, req *pb.InterfaceRequest) 
 	}, nil
 }
 
-func (s *Dot1xService) StreamStatus(req *pb.InterfaceRequest, stream pb.Dot1xManager_StreamStatusServer) error {
+func (s *Dot1xService) StreamStatus(req *pb.InterfaceRequest, stream pb.Dot1XManager_StreamStatusServer) error {
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 	for {

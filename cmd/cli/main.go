@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("Failed to connect: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewDot1xManagerClient(conn)
+	client := pb.NewDot1XManagerClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -79,7 +79,7 @@ func main() {
 		"TTLS": pb.EapType_EAP_TTLS,
 	}[(*eap)]
 
-	req := &pb.Dot1xConfigRequest{
+	req := &pb.Dot1XConfigRequest{
 		Interface:  *iface,
 		EapType:    eapType,
 		Identity:   *identity,
