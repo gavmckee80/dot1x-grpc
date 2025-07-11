@@ -5,6 +5,7 @@ import (
 	"net"
 	"testing"
 
+	"github.com/gavmckee80/dot1x-grpc/internal/core"
 	grpcapi "github.com/gavmckee80/dot1x-grpc/internal/grpc"
 	pb "github.com/gavmckee80/dot1x-grpc/proto"
 	"google.golang.org/grpc"
@@ -16,10 +17,11 @@ const bufSize = 1024 * 1024
 var lis *bufconn.Listener
 
 func init() {
-	lis = bufconn.NewListener(bufSize)
+	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	service := grpcapi.NewDot1xService()
-	pb.RegisterDot1xManagerServer(s, service)
+	manager := core.NewInterfaceManagerWithClient(&MockSupplicant{})
+	service := grpcapi.NewDot1xServiceWithManager(manager)
+	pb.RegisterDot1XManagerServer(s, service)
 	go s.Serve(lis)
 }
 
@@ -36,9 +38,9 @@ func TestConfigureInterfaceTLS(t *testing.T) {
 		t.Fatalf("Failed to dial: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewDot1xManagerClient(conn)
+	client := pb.NewDot1XManagerClient(conn)
 
-	req := &pb.Dot1xConfigRequest{
+	req := &pb.Dot1XConfigRequest{
 		Interface:  "eth1",
 		EapType:    pb.EapType_EAP_TLS,
 		Identity:   "testuser",
@@ -64,9 +66,9 @@ func TestDisconnect(t *testing.T) {
 		t.Fatalf("Failed to dial: %v", err)
 	}
 	defer conn.Close()
-	client := pb.NewDot1xManagerClient(conn)
+	client := pb.NewDot1XManagerClient(conn)
 
-	_, _ = client.ConfigureInterface(ctx, &pb.Dot1xConfigRequest{
+	_, _ = client.ConfigureInterface(ctx, &pb.Dot1XConfigRequest{
 		Interface:  "eth2",
 		EapType:    pb.EapType_EAP_PEAP,
 		Identity:   "bob",

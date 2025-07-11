@@ -8,18 +8,18 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"github.com/gavmckee80/dot1x-grpc/internal/dbus"
+	supplicant "github.com/gavmckee80/dot1x-grpc/internal/dbus"
 	pb "github.com/gavmckee80/dot1x-grpc/proto"
 )
 
 type InterfaceManager struct {
-	client     dbus.SupplicantAPI
+	client     supplicant.SupplicantAPI
 	interfaces map[string]dbus.ObjectPath
 	tempFiles  []string
 }
 
 func NewInterfaceManager() (*InterfaceManager, error) {
-	client, err := dbus.NewSupplicantClient()
+	client, err := supplicant.NewSupplicantClient()
 	if err != nil {
 		return nil, err
 	}
@@ -29,24 +29,24 @@ func NewInterfaceManager() (*InterfaceManager, error) {
 	}, nil
 }
 
-func NewInterfaceManagerWithClient(c dbus.SupplicantAPI) *InterfaceManager {
+func NewInterfaceManagerWithClient(c supplicant.SupplicantAPI) *InterfaceManager {
 	return &InterfaceManager{
 		client:     c,
 		interfaces: make(map[string]dbus.ObjectPath),
 	}
 }
 
-func (m *InterfaceManager) Configure(req *pb.Dot1xConfigRequest) (*pb.Dot1xConfigResponse, error) {
+func (m *InterfaceManager) Configure(req *pb.Dot1XConfigRequest) (*pb.Dot1XConfigResponse, error) {
 	if req.EapType == pb.EapType_EAP_UNKNOWN {
-		return &pb.Dot1xConfigResponse{Success: false, Message: "Invalid EAP type"}, nil
+		return &pb.Dot1XConfigResponse{Success: false, Message: "Invalid EAP type"}, nil
 	}
 	if req.Identity == "" {
-		return &pb.Dot1xConfigResponse{Success: false, Message: "Identity is required"}, nil
+		return &pb.Dot1XConfigResponse{Success: false, Message: "Identity is required"}, nil
 	}
 
 	if req.EapType == pb.EapType_EAP_TLS {
 		if len(req.CaCert) == 0 || len(req.ClientCert) == 0 || len(req.PrivateKey) == 0 {
-			return &pb.Dot1xConfigResponse{Success: false, Message: "TLS credentials missing"}, nil
+			return &pb.Dot1XConfigResponse{Success: false, Message: "TLS credentials missing"}, nil
 		}
 	}
 
@@ -54,7 +54,7 @@ func (m *InterfaceManager) Configure(req *pb.Dot1xConfigRequest) (*pb.Dot1xConfi
 	if err != nil {
 		ifacePath, err = m.client.CreateInterface(req.Interface)
 		if err != nil {
-			return &pb.Dot1xConfigResponse{Success: false, Message: err.Error()}, nil
+			return &pb.Dot1XConfigResponse{Success: false, Message: err.Error()}, nil
 		}
 	}
 	m.interfaces[req.Interface] = ifacePath
@@ -97,13 +97,13 @@ func (m *InterfaceManager) Configure(req *pb.Dot1xConfigRequest) (*pb.Dot1xConfi
 
 	netPath, err := m.client.AddNetwork(ifacePath, cfg)
 	if err != nil {
-		return &pb.Dot1xConfigResponse{Success: false, Message: err.Error()}, nil
+		return &pb.Dot1XConfigResponse{Success: false, Message: err.Error()}, nil
 	}
 	err = m.client.SelectNetwork(ifacePath, netPath)
 	if err != nil {
-		return &pb.Dot1xConfigResponse{Success: false, Message: err.Error()}, nil
+		return &pb.Dot1XConfigResponse{Success: false, Message: err.Error()}, nil
 	}
-	return &pb.Dot1xConfigResponse{Success: true, Message: "Configured"}, nil
+	return &pb.Dot1XConfigResponse{Success: true, Message: "Configured"}, nil
 }
 
 func (m *InterfaceManager) Disconnect(req *pb.InterfaceRequest) (*pb.DisconnectResponse, error) {

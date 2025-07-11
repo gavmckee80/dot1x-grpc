@@ -20,7 +20,7 @@ func main() {
 
 	s := grpc.NewServer()
 	service := grpcapi.NewDot1xService()
-	pb.RegisterDot1xManagerServer(s, service)
+	pb.RegisterDot1XManagerServer(s, service)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)

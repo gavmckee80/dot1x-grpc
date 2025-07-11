@@ -1,3 +1,5 @@
+//go:build examples
+
 package main
 
 import (
@@ -18,7 +20,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	client := pb.NewDot1xManagerClient(conn)
+	client := pb.NewDot1XManagerClient(conn)
 	var wg sync.WaitGroup
 
 	for i := 1; i <= 8; i++ {
@@ -34,7 +36,7 @@ func main() {
 	log.Println("All interfaces disconnected.")
 }
 
-func disconnect(client pb.Dot1xManagerClient, iface string) {
+func disconnect(client pb.Dot1XManagerClient, iface string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

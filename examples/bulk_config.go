@@ -1,3 +1,5 @@
+//go:build examples
+
 package main
 
 import (
@@ -18,7 +20,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	client := pb.NewDot1xManagerClient(conn)
+	client := pb.NewDot1XManagerClient(conn)
 	var wg sync.WaitGroup
 
 	for i := 1; i <= 8; i++ {
@@ -34,11 +36,11 @@ func main() {
 	log.Println("All interfaces configured.")
 }
 
-func configure(client pb.Dot1xManagerClient, iface string) {
+func configure(client pb.Dot1XManagerClient, iface string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	req := &pb.Dot1xConfigRequest{
+	req := &pb.Dot1XConfigRequest{
 		Interface:  iface,
 		EapType:    pb.EapType_EAP_PEAP,
 		Identity:   "testuser",
@@ -51,4 +53,5 @@ func configure(client pb.Dot1xManagerClient, iface string) {
 		log.Printf("[%s] Error: %v", iface, err)
 		return
 	}
-	log.Printf("[%s] %v - %s", iface, resp.Su
+	log.Printf("[%s] %v - %s", iface, resp.Success, resp.Message)
+}
