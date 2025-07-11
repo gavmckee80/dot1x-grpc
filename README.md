@@ -127,6 +127,28 @@ This will generate/update the Go files in the correct locations for your project
 
 ---
 
+## 📚 Documentation
+
+### Local Development
+Serve documentation locally:
+```bash
+# Install godoc if not already installed
+go install golang.org/x/tools/cmd/godoc@latest
+
+# Serve documentation on localhost:6060
+godoc -http=:6060
+```
+
+Then visit: **http://localhost:6060/pkg/github.com/gavmckee80/dot1x-grpc/**
+
+### Generate Static Documentation
+```bash
+mkdir -p docs
+godoc -url=/pkg/github.com/gavmckee80/dot1x-grpc/ > docs/index.html
+```
+
+---
+
 ## ✨ Features
 - Full test coverage with mocks
 - Secure TLS credential handling
