@@ -1,0 +1,16 @@
+[Unit]
+Description=Dot1x GRPC D-Bus Authentication Service
+After=network.target dbus.service
+Requires=dbus.service
+
+[Service]
+Type=simple
+EnvironmentFile=/opt/dot1x/.env
+ExecStart=/usr/local/bin/dot1x-server
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

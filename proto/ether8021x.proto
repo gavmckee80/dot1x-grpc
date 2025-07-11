@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package ether8021x;
+
+service Dot1xManager {
+  rpc ConfigureInterface(Dot1xConfigRequest) returns (Dot1xConfigResponse);
+  rpc GetStatus(InterfaceRequest) returns (InterfaceStatus);
+  rpc StreamStatus(InterfaceRequest) returns (stream InterfaceStatus);
+  rpc Disconnect(InterfaceRequest) returns (DisconnectResponse);
+}
+
+message Dot1xConfigRequest {
+  string interface = 1;
+  EapType eap_type = 2;
+  string identity = 3;
+  string password = 4;
+  string phase2_auth = 5;
+  bytes ca_cert = 6;
+  bytes client_cert = 7;
+  bytes private_key = 8;
+  string private_key_password = 9;
+}
+
+enum EapType {
+  EAP_UNKNOWN = 0;
+  EAP_TLS = 1;
+  EAP_PEAP = 2;
+  EAP_TTLS = 3;
+  EAP_FAST = 4;
+}
+
+message Dot1xConfigResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message InterfaceRequest {
+  string interface = 1;
+}
+
+message InterfaceStatus {
+  string interface = 1;
+  string status = 2;
+  string eap_state = 3;
+  string last_event = 4;
+  string ip_address = 5;
+  int64 timestamp = 6;
+}
+
+message DisconnectResponse {
+  bool success = 1;
+  string message = 2;
+}
