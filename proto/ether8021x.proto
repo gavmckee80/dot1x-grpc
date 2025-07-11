@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package ether8021x;
 
+option go_package = "github.com/gavmckee80/dot1x-grpc/proto";
+
 service Dot1xManager {
   rpc ConfigureInterface(Dot1xConfigRequest) returns (Dot1xConfigResponse);
   rpc GetStatus(InterfaceRequest) returns (InterfaceStatus);

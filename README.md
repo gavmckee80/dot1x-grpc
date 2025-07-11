@@ -99,6 +99,34 @@ grpcurl -plaintext localhost:50051 list
 
 ---
 
+## 🧬 Generate Go Protobuf Stubs
+
+To generate the Go gRPC and protobuf stubs from the proto definition, you need to have `protoc` and the Go plugins installed:
+
+### 1. Install prerequisites (if not already installed):
+
+```bash
+# Install protoc (if not already installed)
+brew install protobuf
+
+# Install Go plugins for protoc (if not already installed)
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+```
+
+Make sure your `$GOPATH/bin` is in your `$PATH` so `protoc` can find the plugins.
+
+### 2. Generate the stubs:
+
+```bash
+cd proto
+./generate.sh
+```
+
+This will generate/update the Go files in the correct locations for your project.
+
+---
+
 ## ✨ Features
 - Full test coverage with mocks
 - Secure TLS credential handling
