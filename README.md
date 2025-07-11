@@ -38,12 +38,23 @@ All unit and integration tests use `bufconn` with mocked D-Bus backend.
 
 ## 🚀 Run the Service
 
+### Production Server
 ```bash
 ./bin/dot1x-server
 ```
 
 - gRPC on `:50051`
 - Prometheus metrics on `:9090/metrics`
+
+### Test Server (No D-Bus Required)
+For development and testing without D-Bus:
+```bash
+./bin/test-server
+```
+
+- Uses mock D-Bus client
+- gRPC reflection enabled
+- Perfect for API exploration and testing
 
 ---
 
@@ -75,14 +86,29 @@ docker run --rm --net=host --privileged dot1x-server
 
 ## 📡 gRPC Interface
 
-Use tools like `grpcurl` or generate stubs with:
+### Service Discovery with Reflection
+
+The server supports gRPC reflection, allowing you to explore the API without the `.proto` files:
+
 ```bash
-protoc --go_out=. --go-grpc_out=. proto/ether8021x.proto
+# List available services
+grpcurl -plaintext localhost:50051 list
+
+# Describe a service
+grpcurl -plaintext localhost:50051 describe ether8021x.Dot1xManager
+
+# Describe message types
+grpcurl -plaintext localhost:50051 describe ether8021x.Dot1xConfigRequest
+
+# Call a method
+grpcurl -plaintext -d '{"interface": "eth0", "eap_type": "EAP_PEAP", "identity": "user", "password": "pass"}' localhost:50051 ether8021x.Dot1xManager/ConfigureInterface
 ```
 
-Then build a client or use `grpcurl`:
+### Manual Stub Generation
+
+For production clients, generate stubs with:
 ```bash
-grpcurl -plaintext localhost:50051 list
+protoc --go_out=. --go-grpc_out=. proto/ether8021x.proto
 ```
 
 ---
